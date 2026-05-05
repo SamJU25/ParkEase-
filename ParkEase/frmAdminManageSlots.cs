@@ -47,7 +47,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadSlots(txtSearchAdmin.Text.Trim());
+            LoadSlots(txtSearchAdmin.Text.Trim()); // live search slots
         }
 
         private void LoadSlots(string searchTerm = "")
@@ -109,6 +109,7 @@ namespace ParkEase
 
         private void btnSlotSaveAdmin_Click(object sender, EventArgs e)
         {
+            // gets user input
             string slotNumber = txtSlotNumberAdmin.Text.Trim().ToUpper();
             string vehicleType = cmbSlotVehicleTypeAdmin.Text.Trim();
             string status = cmbSlotStatusAdmin.Text.Trim();
@@ -119,7 +120,7 @@ namespace ParkEase
                 return;
             }
             // check format
-            if (!IsValidSlotFormat(slotNumber))
+            if (!IsValidSlotFormat(slotNumber)) // regex validation
             {
                 MessageBox.Show("Invalid slot number format. Use format like A-01, S-13.");
                 return;
@@ -127,37 +128,34 @@ namespace ParkEase
 
             try
             {
-                if (selectedSlotId == 0)
+                if (selectedSlotId == 0) // if add mode
                 {
                     // adding new slot
                     string checkSql = "SELECT * FROM parking_slots WHERE slot_number='" + slotNumber + "'";
-                    DataTable dt = da.ExecuteQueryTable(checkSql);
+                    DataTable dt = da.ExecuteQueryTable(checkSql); // check duplicate slot
                     if (dt.Rows.Count > 0)
                     {
                         MessageBox.Show("This slot number already exists.");
-                        return;
+                        return; // stop execution
                     }
 
                     string insertSql = "INSERT INTO parking_slots (slot_number, vehicle_type, status) VALUES ('" + slotNumber + "', '" + vehicleType + "', '" + status + "')";
-                    if (da.ExecuteDMLQuery(insertSql) > 0)
+                    if (da.ExecuteDMLQuery(insertSql) > 0) // run insert query
                     {
                         MessageBox.Show("Slot added successfully!");
                     }
                 }
-                else
+                else // if edit mode
                 {
                     // editing existing slot
 
-                    // cant set maintenance if car is parked
-                    if (status == "Maintenance")
+                    // cant edit if car is parked
+                    string checkParkedSql = "SELECT * FROM parking_records WHERE slot_id=" + selectedSlotId + " AND exit_time IS NULL";
+                    DataTable dtParked = da.ExecuteQueryTable(checkParkedSql); // check active parking
+                    if (dtParked.Rows.Count > 0)
                     {
-                        string checkParkedSql = "SELECT * FROM parking_records WHERE slot_id=" + selectedSlotId + " AND exit_time IS NULL";
-                        DataTable dtParked = da.ExecuteQueryTable(checkParkedSql);
-                        if (dtParked.Rows.Count > 0)
-                        {
-                            MessageBox.Show("You cannot put this slot into Maintenance because a vehicle is currently parked here! The vehicle must exit first.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
-                        }
+                        MessageBox.Show("You cannot edit this slot because a vehicle is currently parked here! The vehicle must exit first.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
 
                     // no duplicate slot numbers
@@ -187,7 +185,7 @@ namespace ParkEase
 
         private void btnSlotDeleteAdmin_Click(object sender, EventArgs e)
         {
-            if (selectedSlotId == 0)
+            if (selectedSlotId == 0) // validation: select first
             {
                 MessageBox.Show("Please select a slot from the table first.");
                 return;
@@ -198,17 +196,21 @@ namespace ParkEase
 
             try
             {
-                // cant delete if car is parked here
+                // cant delete if car is parked here or slot is booked
                 string checkSql = "SELECT * FROM parking_records WHERE slot_id=" + selectedSlotId + " AND exit_time IS NULL";
-                DataTable dt = da.ExecuteQueryTable(checkSql);
-                if (dt.Rows.Count > 0)
+                DataTable dt = da.ExecuteQueryTable(checkSql); // check active parking
+
+                string checkStatusSql = "SELECT * FROM parking_slots WHERE slot_id=" + selectedSlotId + " AND status='Booked'";
+                DataTable dtStatus = da.ExecuteQueryTable(checkStatusSql); // check booked status
+
+                if (dt.Rows.Count > 0 || dtStatus.Rows.Count > 0)
                 {
-                    MessageBox.Show("Cannot delete this slot. A vehicle is currently parked here.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Cannot delete this slot. It is currently booked or a vehicle is parked here.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 string sql = "DELETE FROM parking_slots WHERE slot_id=" + selectedSlotId;
-                if (da.ExecuteDMLQuery(sql) > 0)
+                if (da.ExecuteDMLQuery(sql) > 0) // run delete query
                 {
                     MessageBox.Show("Slot deleted successfully!");
                     ClearInputs();

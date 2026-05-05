@@ -44,7 +44,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadMyVehicles(txtSearchAdmin.Text.Trim());
+            LoadMyVehicles(txtSearchAdmin.Text.Trim()); // live search vehicles
         }
 
         private void LoadMyVehicles(string searchTerm = "")
@@ -110,57 +110,60 @@ namespace ParkEase
         // SAVE BUTTON (Handles both Insert & Update)
         private void btnVehicleEditUser_Click(object sender, EventArgs e)
         {
+            // gets user input
+            string plateNumber = txtPlateNumberUser.Text.Trim().ToUpper();
+            string type = cmbVehicleTypeUser.Text.Trim();
+
             // 1. Validate Input
-            if (string.IsNullOrWhiteSpace(txtPlateNumberUser.Text) || cmbVehicleTypeUser.SelectedIndex == -1)
+            if (string.IsNullOrWhiteSpace(plateNumber) || cmbVehicleTypeUser.SelectedIndex == -1)
             {
                 MessageBox.Show("Please enter a plate number and select a vehicle type.", "Missing Info");
                 return;
             }
 
             string platePattern = @"^[A-Za-z]{3}-\d{4}$";
-            if (!Regex.IsMatch(txtPlateNumberUser.Text, platePattern))
+            if (!Regex.IsMatch(plateNumber, platePattern))
             {
                 MessageBox.Show("Invalid Plate Format! Use like ABC-1234.", "Format Error");
                 return;
             }
 
-            string finalPlate = txtPlateNumberUser.Text.ToUpper();
-
             try
             {
-                string query = "";
-
-                // 2. Determine Action: INSERT (New) or UPDATE (Edit)
-                if (selectedVehicleId == 0)
+                // 2. Determine Action: INSERT or UPDATE
+                if (selectedVehicleId == 0) // if add mode
                 {
-                    // --- INSERT MODE ---
-                    string checkSql = $"SELECT COUNT(*) FROM vehicles WHERE plate_number = '{finalPlate}'";
-                    if (Convert.ToInt32(da.ExecuteQueryTable(checkSql).Rows[0][0]) > 0)
+                    // check duplicate across entire system
+                    string checkSql = "SELECT COUNT(*) FROM vehicles WHERE plate_number='" + plateNumber + "'";
+                    if (Convert.ToInt32(da.ExecuteQueryTable(checkSql).Rows[0][0]) > 0) // queries db
                     {
-                        MessageBox.Show("This license plate is already registered!", "Duplicate");
-                        return;
+                        MessageBox.Show("This plate number is already registered.");
+                        return; // stop execution
                     }
 
-                    query = $"INSERT INTO vehicles (user_id, plate_number, vehicle_type) VALUES ({loggedInUserId}, '{finalPlate}', '{cmbVehicleTypeUser.Text}')";
-                }
-                else
-                {
-                    // --- UPDATE MODE ---
-                    string checkSql = $"SELECT COUNT(*) FROM vehicles WHERE plate_number = '{finalPlate}' AND vehicle_id <> {selectedVehicleId}";
-                    if (Convert.ToInt32(da.ExecuteQueryTable(checkSql).Rows[0][0]) > 0)
+                    string insertSql = "INSERT INTO vehicles (user_id, plate_number, vehicle_type) VALUES (" + loggedInUserId + ", '" + plateNumber + "', '" + type + "')";
+                    if (da.ExecuteDMLQuery(insertSql) > 0) // run insert query
                     {
-                        MessageBox.Show("Another vehicle has this plate already!");
-                        return;
+                        MessageBox.Show("Vehicle added successfully!", "Success");
+                        ClearInputs();
+                    }
+                }
+                else // if edit mode
+                {
+                    // check duplicate excluding this vehicle
+                    string checkSql = "SELECT COUNT(*) FROM vehicles WHERE plate_number='" + plateNumber + "' AND vehicle_id <> " + selectedVehicleId;
+                    if (Convert.ToInt32(da.ExecuteQueryTable(checkSql).Rows[0][0]) > 0) // queries db
+                    {
+                        MessageBox.Show("This plate number is already registered to another vehicle.");
+                        return; // stop execution
                     }
 
-                    query = $"UPDATE vehicles SET plate_number = '{finalPlate}', vehicle_type = '{cmbVehicleTypeUser.Text}' WHERE vehicle_id = {selectedVehicleId}";
-                }
-
-                // 3. Execute query
-                if (da.ExecuteDMLQuery(query) > 0)
-                {
-                    MessageBox.Show(selectedVehicleId == 0 ? "Vehicle added successfully!" : "Vehicle updated successfully!", "Success");
-                    ClearInputs();
+                    string updateSql = "UPDATE vehicles SET plate_number='" + plateNumber + "', vehicle_type='" + type + "' WHERE vehicle_id=" + selectedVehicleId;
+                    if (da.ExecuteDMLQuery(updateSql) > 0) // run update query
+                    {
+                        MessageBox.Show("Vehicle updated successfully!", "Success");
+                        ClearInputs();
+                    }
                 }
             }
             catch (Exception ex)
@@ -170,18 +173,17 @@ namespace ParkEase
         }
 
         // DELETE BUTTON
-
         private void btnVehicleDeleteUser_Click(object sender, EventArgs e)
         {
-            if (selectedVehicleId == 0)
+            if (selectedVehicleId == 0) // validation: select first
             {
                 MessageBox.Show("Please click on a vehicle from the table first.");
                 return;
             }
 
-            // check if currently parked
-            string checkActiveQuery = $"SELECT COUNT(*) FROM parking_records WHERE vehicle_id = {selectedVehicleId} AND exit_time IS NULL";
-            if (Convert.ToInt32(da.ExecuteQueryTable(checkActiveQuery).Rows[0][0]) > 0)
+            // cant delete if parked
+            string activeSql = "SELECT * FROM parking_records WHERE vehicle_id=" + selectedVehicleId + " AND exit_time IS NULL";
+            if (da.ExecuteQueryTable(activeSql).Rows.Count > 0) // check active parking
             {
                 MessageBox.Show("Cannot delete a currently parked vehicle!");
                 return;

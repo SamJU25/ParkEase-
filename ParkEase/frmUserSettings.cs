@@ -78,11 +78,12 @@ namespace ParkEase
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            string newName = txtFullName.Text.Trim();
+            // gets user input
+            string newFullName = txtFullName.Text.Trim();
             string newEmail = txtEmail.Text.Trim();
             string newPhone = txtPhone.Text.Trim();
-            string enteredCurrentPass = txtCurrentPassword.Text;
-            string newPass = txtNewPassword.Text;
+            string currentPassword = txtCurrentPassword.Text.Trim();
+            string newPassword = txtNewPassword.Text.Trim();
 
             // need at least email or phone
             if (string.IsNullOrEmpty(newEmail) && string.IsNullOrEmpty(newPhone))
@@ -93,9 +94,9 @@ namespace ParkEase
 
             try
             {
-                if (!string.IsNullOrEmpty(newPass))
+                if (!string.IsNullOrEmpty(newPassword)) // if changing password
                 {
-                    if (enteredCurrentPass != actualCurrentPassword)
+                    if (actualCurrentPassword != currentPassword) // verify password
                     {
                         MessageBox.Show("Incorrect Current Password.", "Security Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
@@ -103,19 +104,18 @@ namespace ParkEase
                 }
 
                 List<string> updates = new List<string>();
-                updates.Add($"full_name = '{newName}'");
+                updates.Add($"full_name = '{newFullName}'");
                 updates.Add($"email = '{newEmail}'");
                 updates.Add($"phone = '{newPhone}'");
 
-                if (!string.IsNullOrEmpty(newPass))
+                if (!string.IsNullOrEmpty(newPassword))
                 {
-                    updates.Add($"password = '{newPass}'");
+                    updates.Add($"password = '{newPassword}'");
                 }
 
-                string updateSql = $"UPDATE users SET {string.Join(", ", updates)} WHERE user_id = {Session.UserId}";
-                int rowsAffected = da.ExecuteDMLQuery(updateSql);
+                string updateSql = "UPDATE users SET " + string.Join(", ", updates) + " WHERE user_id = " + Session.UserId;
 
-                if (rowsAffected > 0)
+                if (da.ExecuteDMLQuery(updateSql) > 0) // run update query
                 {
                     MessageBox.Show("Settings updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     lblInfoLastSaved.Text = DateTime.Now.ToString("g");

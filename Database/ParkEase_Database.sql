@@ -1,7 +1,6 @@
 USE master;
 GO
 
--- Drop existing database to ensure a clean build
 IF DB_ID('ParkEaseDB') IS NOT NULL
 BEGIN
     ALTER DATABASE ParkEaseDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;

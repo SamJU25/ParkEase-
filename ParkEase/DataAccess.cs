@@ -44,8 +44,9 @@ namespace ParkEase
         {
             try
             {
+                // connect to sql database
                 this.Sqlcon = new SqlConnection(@"Data Source=TENDA\SQLEXPRESS;Initial Catalog=ParkEaseDB;Integrated Security=True");
-                Sqlcon.Open();
+                Sqlcon.Open(); // open connection
             }
             catch (Exception ex)
             {
@@ -72,15 +73,15 @@ namespace ParkEase
             this.Sqlcom = new SqlCommand(sql, this.Sqlcon);//this.QueryText(sql);
             this.Sda = new SqlDataAdapter(this.Sqlcom);
             this.Ds = new DataSet();
-            this.Sda.Fill(this.Ds);
-            return Ds.Tables[0];
+            this.Sda.Fill(this.Ds); // fetch data
+            return Ds.Tables[0]; // return first table
         }
 
         public int ExecuteDMLQuery(string sql)
         {
             this.Sqlcom = new SqlCommand(sql, this.Sqlcon);//this.QueryText(sql);
-            int u = this.Sqlcom.ExecuteNonQuery();
-            return u;
+            int u = this.Sqlcom.ExecuteNonQuery(); // run insert/update/delete
+            return u; // return rows affected
         }
     }
 }

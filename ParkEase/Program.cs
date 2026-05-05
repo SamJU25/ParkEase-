@@ -13,7 +13,7 @@ namespace ParkEase
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmSignIn());
+            Application.Run(new frmSignIn()); // start at sign in
         }
     }
 }

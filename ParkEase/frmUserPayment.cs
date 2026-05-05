@@ -208,36 +208,23 @@ namespace ParkEase
 
         private void btnConfirmPayment_Click(object sender, EventArgs e)
         {
-            if (currentRecordId == 0)
+            if (currentRecordId == 0) // validation: select first
             {
                 MessageBox.Show("Please select a vehicle to pay for first.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string selectedMethod = cmbSelectPayment.Text;
-            if (selectedMethod == "Select Method..." || selectedMethod == "")
+            string paymentMethod = cmbSelectPayment.SelectedItem.ToString();
+
+            // process payment based on method
+            if (paymentMethod == "bKash" || paymentMethod == "Nagad")
             {
                 MessageBox.Show("Please select a payment method.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // mobile validation
-            if (selectedMethod == "bKash" || selectedMethod == "Nagad")
-            {
-                if (txtMobile.Text.Length < 11 || !txtMobile.Text.StartsWith("01"))
-                {
-                    MessageBox.Show("Please enter a valid 11-digit Mobile Number starting with '01'.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                if (txtOTP.Text.Length < 6)
-                {
-                    MessageBox.Show("Please enter a valid 6-digit OTP.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-            }
-
             // card validation
-            if (selectedMethod == "Card")
+            if (paymentMethod == "Card")
             {
                 if (txtCardNumber.Text.Length < 16 || txtExpiry.Text.Length < 5 || txtCVV.Text.Length < 3)
                 {
@@ -248,21 +235,21 @@ namespace ParkEase
 
             try
             {
-                string updateRecordSql = $@"UPDATE parking_records 
-                                            SET exit_time = CURRENT_TIMESTAMP, 
-                                                fee = {finalCalculatedFee}, 
-                                                is_paid = 1 
-                                            WHERE record_id = {currentRecordId}";
-                da.ExecuteDMLQuery(updateRecordSql);
+                // update record as paid
+                string updateRecordSql = "UPDATE parking_records SET exit_time = CURRENT_TIMESTAMP, fee = " + finalCalculatedFee + ", is_paid = 1 WHERE record_id = " + currentRecordId;
+                
+                // update slot as available
+                string updateSlotSql = "UPDATE parking_slots SET status = 'Available' WHERE slot_number = '" + slotToFree + "'";
 
-                string freeSlotSql = $"UPDATE parking_slots SET status = 'Available' WHERE slot_number = '{slotToFree}'";
-                da.ExecuteDMLQuery(freeSlotSql);
+                if (da.ExecuteDMLQuery(updateRecordSql) > 0) // run update query
+                {
+                    da.ExecuteDMLQuery(updateSlotSql); // run slot update
+                    MessageBox.Show("Payment Successful! Thank you for using ParkEase.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                MessageBox.Show("Payment Successful! Thank you for using ParkEase.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                frmUserAvailableSlots form = new frmUserAvailableSlots();
-                form.Show();
-                this.Close();
+                    frmUserAvailableSlots availableSlots = new frmUserAvailableSlots(); // opens available slots
+                    availableSlots.Show();
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {

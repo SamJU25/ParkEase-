@@ -91,6 +91,7 @@ namespace ParkEase
 
         private void btnAdminDetailsSave_Click(object sender, EventArgs e)
         {
+            // gets user input
             string newUsername = txtUsernameAdmin.Text.Trim();
             string newFullName = txtFullNameAdmin.Text.Trim();
             string newEmail = txtEmailAddressAdmin.Text.Trim();
@@ -117,7 +118,7 @@ namespace ParkEase
                 return;
             }
 
-            if (!IsValidEmail(newEmail))
+            if (!IsValidEmail(newEmail)) // regex validation
             {
                 MessageBox.Show("Please enter a valid email address (or leave it empty).", "Invalid Email");
                 return;
@@ -133,7 +134,7 @@ namespace ParkEase
             {
                 // check duplicate username
                 string dupSql = "SELECT * FROM users WHERE username='" + newUsername + "' AND user_id <> " + Session.UserId;
-                DataTable dtDup = da.ExecuteQueryTable(dupSql);
+                DataTable dtDup = da.ExecuteQueryTable(dupSql); // queries db
                 if (dtDup.Rows.Count > 0)
                 {
                     MessageBox.Show("Another user is already using this username.");
@@ -190,7 +191,7 @@ namespace ParkEase
                                 "WHERE user_id=" + Session.UserId;
                 }
 
-                if (da.ExecuteDMLQuery(updateSql) > 0)
+                if (da.ExecuteDMLQuery(updateSql) > 0) // run update query
                 {
                     MessageBox.Show("Account details updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

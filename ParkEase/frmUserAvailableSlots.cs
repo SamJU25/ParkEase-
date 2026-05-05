@@ -61,7 +61,7 @@ namespace ParkEase
         {
             try
             {
-                string sql = "SELECT slot_id, slot_number AS Display " +
+                string sql = "SELECT slot_id, slot_number + ' (' + vehicle_type + ')' AS Display " +
                              "FROM parking_slots WHERE status='Available' ORDER BY slot_number";
                 DataTable dt = da.ExecuteQueryTable(sql);
 
@@ -78,7 +78,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadAvailableSlotsTable(txtSearchAdmin.Text.Trim());
+            LoadAvailableSlotsTable(txtSearchAdmin.Text.Trim()); // live search available slots
         }
 
         private void LoadAvailableSlotsTable(string searchTerm = "")
@@ -92,8 +92,7 @@ namespace ParkEase
                                    " OR vehicle_type LIKE '%" + searchTerm + "%')";
                 }
 
-                // CHANGED: Removed 'vehicle_type AS [Vehicle Type]' from the SELECT statement
-                string sql = "SELECT slot_number AS [Slot Number], status AS Status " +
+                string sql = "SELECT slot_number AS [Slot Number], vehicle_type AS [Vehicle Type], status AS Status " +
                              "FROM parking_slots WHERE status='Available'" + searchClause + " ORDER BY slot_number";
 
                 DataTable dt = da.ExecuteQueryTable(sql);
@@ -115,6 +114,7 @@ namespace ParkEase
                 string sql = $@"SELECT 
                                 pr.record_id AS ID,
                                 v.plate_number AS [Plate Number],
+                                v.vehicle_type AS [Vehicle Type],
                                 s.slot_number AS [Slot],
                                 pr.entry_time AS [Entry Time]
                              FROM parking_records pr
@@ -171,34 +171,53 @@ namespace ParkEase
                 return;
             }
 
+            // gets user input
+            int selectedVehicleId = Convert.ToInt32(cmbMyVehicles.SelectedValue);
+            string selectedSlotNumber = cmbAvailableSlots.Text.Split(' ')[0];
+            int slotId = Convert.ToInt32(cmbAvailableSlots.SelectedValue);
+
             try
             {
-                int vehicleId = Convert.ToInt32(cmbMyVehicles.SelectedValue);
-                int slotId = Convert.ToInt32(cmbAvailableSlots.SelectedValue);
+                string typeCheckSql = @"
+                    SELECT 
+                        (SELECT vehicle_type FROM vehicles WHERE vehicle_id = " + selectedVehicleId + @") AS VType,
+                        (SELECT vehicle_type FROM parking_slots WHERE slot_id = " + slotId + @") AS SType
+                ";
 
-                //check if already parked
-                string checkSql = $"SELECT COUNT(*) FROM parking_records WHERE vehicle_id = {vehicleId} AND exit_time IS NULL";
-                DataTable dtCheck = da.ExecuteQueryTable(checkSql);
-                if (Convert.ToInt32(dtCheck.Rows[0][0]) > 0)
+                DataTable dtTypes = da.ExecuteQueryTable(typeCheckSql); // check types query
+                if (dtTypes.Rows.Count > 0)
                 {
-                    MessageBox.Show("This vehicle is already parked! Exit it first.", "Already Parked");
-                    return;
+                    string vType = dtTypes.Rows[0]["VType"].ToString();
+                    string sType = dtTypes.Rows[0]["SType"].ToString();
+
+                    if (vType != sType)
+                    {
+                        MessageBox.Show($"Mismatch! You cannot park a {vType} in a {sType} slot.", "Invalid Slot Selection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return; // Stops the parking process entirely
+                    }
+                }
+
+                // check if this vehicle is already parked somewhere
+                string parkedCheckSql = "SELECT COUNT(*) FROM parking_records WHERE vehicle_id=" + selectedVehicleId + " AND exit_time IS NULL";
+                if (Convert.ToInt32(da.ExecuteQueryTable(parkedCheckSql).Rows[0][0]) > 0) // check active parking
+                {
+                    MessageBox.Show("This vehicle is already parked!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return; // stop execution
                 }
 
                 DialogResult confirm = MessageBox.Show("Confirm parking this vehicle?",
                     "Confirm Parking", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (confirm != DialogResult.Yes) return;
 
-                string insertSql = $@"INSERT INTO parking_records 
-                    (vehicle_id, slot_id, entry_time, exit_time, fee, is_paid) 
-                    VALUES ({vehicleId}, {slotId}, GETDATE(), NULL, NULL, 0)";
-                int insertResult = da.ExecuteDMLQuery(insertSql);
+                // insert record with NULL exit time
+                string insertSql = "INSERT INTO parking_records (vehicle_id, slot_id, entry_time, exit_time, fee, is_paid) VALUES (" + selectedVehicleId + ", " + slotId + ", GETDATE(), NULL, NULL, 0)";
+                
+                // update slot status to Booked
+                string updateSlotSql = "UPDATE parking_slots SET status='Booked' WHERE slot_id=" + slotId;
 
-                if (insertResult > 0)
+                if (da.ExecuteDMLQuery(insertSql) > 0) // run insert query
                 {
-                    // mark slot as booked
-                    string updateSql = $"UPDATE parking_slots SET status='Booked' WHERE slot_id = {slotId}";
-                    da.ExecuteDMLQuery(updateSql);
+                    da.ExecuteDMLQuery(updateSlotSql); // run update query
 
                     MessageBox.Show("Vehicle parked successfully! Have a great day!", "Success");
 
@@ -220,7 +239,7 @@ namespace ParkEase
 
         private void btnCheckout_Click(object sender, EventArgs e)
         {
-            if (dgvParkedVehicles.SelectedRows.Count == 0)
+            if (dgvParkedVehicles.SelectedRows.Count == 0) // validation: select first
             {
                 MessageBox.Show("Please select a currently parked vehicle to checkout.", "Select Vehicle", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -232,9 +251,9 @@ namespace ParkEase
 
             try
             {
-                // get entry time
-                string getEntrySql = "SELECT entry_time FROM parking_records WHERE record_id = " + recordId;
-                DataTable dt = da.ExecuteQueryTable(getEntrySql);
+                // calculate fee
+                string sql = "SELECT entry_time FROM parking_records WHERE record_id=" + recordId;
+                DataTable dt = da.ExecuteQueryTable(sql); // fetch entry time
 
                 if (dt.Rows.Count > 0)
                 {
@@ -250,7 +269,7 @@ namespace ParkEase
                     double hourlyRate = 50.0;
                     double totalCost = totalHours * hourlyRate;
 
-                    DialogResult payConfirm = MessageBox.Show(
+                    DialogResult answer = MessageBox.Show(
                         $"--- PARKING BILL SUMMARY ---\n\n" +
                         $"Slot: {slotNumber}\n" +
                         $"Entry Time: {entryTime.ToString("g")}\n" +
@@ -262,11 +281,11 @@ namespace ParkEase
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Information);
 
-                    if (payConfirm == DialogResult.Yes)
+                    if (answer == DialogResult.Yes)
                     {
-                        frmUserPayment paymentForm = new frmUserPayment(recordId);
+                        frmUserPayment paymentForm = new frmUserPayment(recordId); // opens payment form
                         paymentForm.Show();
-                        this.Hide();
+                        this.Close();
                     }
                     else
                     {

@@ -25,7 +25,7 @@ namespace ParkEase
         {
             lblWelcomeAdmin.Text = !string.IsNullOrEmpty(Session.Username) ? Session.Username : "Admin";
             lblCurrentTime.Text = DateTime.Now.ToString("MMMM dd, yyyy");
-            LoadDashboardData();
+            LoadDashboardData(); // load stats
         }
 
         private void btnAdminDashboard_Click(object sender, EventArgs e)
@@ -36,7 +36,7 @@ namespace ParkEase
         {
             try
             {
-                frmAdminManageSlots form = new frmAdminManageSlots();
+                frmAdminManageSlots form = new frmAdminManageSlots(); // open manage slots form
                 form.Show();
                 this.Hide();
             }
@@ -112,9 +112,9 @@ namespace ParkEase
 
             if (result == DialogResult.Yes)
             {
-                frmSignIn login = new frmSignIn();
+                frmSignIn login = new frmSignIn(); // opens login form
                 login.Show();
-                this.Close();
+                this.Close(); // close dashboard
             }
         }
 
@@ -122,9 +122,9 @@ namespace ParkEase
         {
             try
             {
-                // total slots
+                // count total slots
                 string sqlTotal = "SELECT COUNT(*) AS Total FROM parking_slots";
-                DataTable dtTotal = da.ExecuteQueryTable(sqlTotal);
+                DataTable dtTotal = da.ExecuteQueryTable(sqlTotal); // query total slots
                 lblTotalSlotsValue.Text = dtTotal.Rows[0]["Total"].ToString();
 
                 // available
@@ -137,9 +137,9 @@ namespace ParkEase
                 DataTable dtUsed = da.ExecuteQueryTable(sqlUsed);
                 lblUsedSlotsValue.Text = dtUsed.Rows[0]["Used"].ToString();
 
-                // earnings
+                // sum earnings
                 string sqlEarn = "SELECT ISNULL(SUM(fee), 0) AS TotalFee FROM parking_records WHERE is_paid=1";
-                DataTable dtEarn = da.ExecuteQueryTable(sqlEarn);
+                DataTable dtEarn = da.ExecuteQueryTable(sqlEarn); // query total earnings
                 lblTotalEarningsValue.Text = "Tk " + dtEarn.Rows[0]["TotalFee"].ToString();
 
                 LoadRecentRecords();
@@ -152,7 +152,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadRecentRecords(txtSearchAdmin.Text.Trim());
+            LoadRecentRecords(txtSearchAdmin.Text.Trim()); // live search on typing
         }
 
         private void LoadRecentRecords(string searchTerm = "")
@@ -180,8 +180,8 @@ namespace ParkEase
                       WHERE p.exit_time IS NULL " + searchClause +
                       " ORDER BY p.record_id DESC";
 
-                DataTable dtRecords = da.ExecuteQueryTable(sqlRecords);
-                dgvRecentRecords.DataSource = dtRecords;
+                DataTable dtRecords = da.ExecuteQueryTable(sqlRecords); // query recent records
+                dgvRecentRecords.DataSource = dtRecords; // bind to grid
 
                 dgvRecentRecords.EnableHeadersVisualStyles = false;
                 dgvRecentRecords.ColumnHeadersDefaultCellStyle.BackColor = Color.MediumPurple;

@@ -26,10 +26,12 @@ namespace ParkEase
 
         private void btnSignUp_Click(object sender, EventArgs e)
         {
+            // gets user input
             string username = txtSignUpUsername.Text.Trim();
             string password = txtSignUpPassword.Text.Trim();
             string role = cmbSignUpUserAdmin.Text.Trim();
 
+            // validation: prevents empty input
             if (username == "")
             {
                 MessageBox.Show("Please enter a username.");
@@ -46,7 +48,7 @@ namespace ParkEase
                 return;
             }
 
-            if (username.Length > 30)
+            if (username.Length > 30) // length validation
             {
                 MessageBox.Show("Username cannot be more than 30 characters.");
                 return;
@@ -61,17 +63,18 @@ namespace ParkEase
             {
                 // check if username exists
                 string checkSql = "SELECT * FROM users WHERE username='" + username + "'";
-                DataTable dt = da.ExecuteQueryTable(checkSql);
-                if (dt.Rows.Count > 0)
+                DataTable dt = da.ExecuteQueryTable(checkSql); // queries db
+                if (dt.Rows.Count > 0) // if duplicate found
                 {
                     MessageBox.Show("This username is already taken.");
-                    return;
+                    return; // stop execution
                 }
 
+                // insert new user
                 string insertSql = "INSERT INTO users (username, password, role) VALUES ('" + username + "', '" + password + "', '" + role + "')";
-                int result = da.ExecuteDMLQuery(insertSql);
+                int result = da.ExecuteDMLQuery(insertSql); // run insert query
 
-                if (result > 0)
+                if (result > 0) // if successful
                 {
                     MessageBox.Show("Account created successfully!");
                     txtSignUpUsername.Clear();
@@ -79,7 +82,7 @@ namespace ParkEase
                     cmbSignUpUserAdmin.SelectedIndex = 0;
 
                     this.Hide();
-                    frmSignIn loginForm = new frmSignIn();
+                    frmSignIn loginForm = new frmSignIn(); // opens login form
                     loginForm.Show();
                 }
                 else

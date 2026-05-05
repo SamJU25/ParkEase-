@@ -35,7 +35,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadUsers(txtSearchAdmin.Text.Trim());
+            LoadUsers(txtSearchAdmin.Text.Trim()); // live search users
         }
 
         private void LoadUsers(string searchTerm = "")
@@ -101,6 +101,7 @@ namespace ParkEase
 
         private void btnUserSaveAdmin_Click(object sender, EventArgs e)
         {
+            // gets user input
             string username = txtUsernameAdmin.Text.Trim();
             string password = txtPasswordAdmin.Text.Trim();
             string role = cmbRoleAdmin.Text.Trim();
@@ -118,7 +119,7 @@ namespace ParkEase
 
             try
             {
-                if (isAddMode || selectedUserId == 0)
+                if (isAddMode || selectedUserId == 0) // if add mode
                 {
                     // add new user
                     if (password == "")
@@ -134,20 +135,20 @@ namespace ParkEase
 
                     // check duplicate
                     string checkSql = "SELECT * FROM users WHERE username='" + username + "'";
-                    DataTable dt = da.ExecuteQueryTable(checkSql);
+                    DataTable dt = da.ExecuteQueryTable(checkSql); // check duplicate username
                     if (dt.Rows.Count > 0)
                     {
                         MessageBox.Show("This username already exists.");
-                        return;
+                        return; // stop execution
                     }
 
                     string insertSql = "INSERT INTO users (username, password, role) VALUES ('" + username + "', '" + password + "', '" + role + "')";
-                    if (da.ExecuteDMLQuery(insertSql) > 0)
+                    if (da.ExecuteDMLQuery(insertSql) > 0) // run insert query
                     {
                         MessageBox.Show("User added successfully!");
                     }
                 }
-                else
+                else // if edit mode
                 {
                     // edit existing user
 
@@ -196,7 +197,7 @@ namespace ParkEase
                         updateSql = "UPDATE users SET username='" + username + "', password='" + password + "', role='" + role + "' WHERE user_id=" + selectedUserId;
                     }
 
-                    if (da.ExecuteDMLQuery(updateSql) > 0)
+                    if (da.ExecuteDMLQuery(updateSql) > 0) // run update query
                     {
                         MessageBox.Show("User updated successfully!");
                     }
@@ -213,7 +214,7 @@ namespace ParkEase
 
         private void btnUserDeleteAdmin_Click(object sender, EventArgs e)
         {
-            if (selectedUserId == 0)
+            if (selectedUserId == 0) // validation: select first
             {
                 MessageBox.Show("Please select a user from the table first.");
                 return;
@@ -250,7 +251,7 @@ namespace ParkEase
                 string activeSql = @"SELECT COUNT(*) FROM parking_records pr 
                                     INNER JOIN vehicles v ON pr.vehicle_id = v.vehicle_id 
                                     WHERE v.user_id = " + selectedUserId + " AND pr.exit_time IS NULL";
-                DataTable dtActive = da.ExecuteQueryTable(activeSql);
+                DataTable dtActive = da.ExecuteQueryTable(activeSql); // check active parking
                 if (Convert.ToInt32(dtActive.Rows[0][0]) > 0)
                 {
                     MessageBox.Show("Cannot delete this user. They have a vehicle currently parked!", "Action Denied");
@@ -266,7 +267,7 @@ namespace ParkEase
                 da.ExecuteDMLQuery(deleteVehiclesSql);
 
                 string deleteUserSql = "DELETE FROM users WHERE user_id = " + selectedUserId;
-                if (da.ExecuteDMLQuery(deleteUserSql) > 0)
+                if (da.ExecuteDMLQuery(deleteUserSql) > 0) // run delete query
                 {
                     MessageBox.Show("User deleted successfully!");
                     ClearInputs();

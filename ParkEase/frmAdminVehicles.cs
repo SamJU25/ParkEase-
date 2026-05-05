@@ -36,7 +36,7 @@ namespace ParkEase
             try
             {
                 string sql = "SELECT COUNT(*) AS Total FROM vehicles";
-                DataTable dt = da.ExecuteQueryTable(sql);
+                DataTable dt = da.ExecuteQueryTable(sql); // query total vehicles
                 lblTotalVehicleNumber.Text = dt.Rows[0]["Total"].ToString();
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadAllVehicles(txtSearchAdmin.Text.Trim());
+            LoadAllVehicles(txtSearchAdmin.Text.Trim()); // live search vehicles
         }
 
         private void LoadAllVehicles(string searchTerm = "")

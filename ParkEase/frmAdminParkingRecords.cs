@@ -37,7 +37,7 @@ namespace ParkEase
             {
                 // total records
                 string sqlTotal = "SELECT COUNT(*) AS Total FROM parking_records";
-                DataTable dtTotal = da.ExecuteQueryTable(sqlTotal);
+                DataTable dtTotal = da.ExecuteQueryTable(sqlTotal); // query total records
                 lblTotalRecords.Text = dtTotal.Rows[0]["Total"].ToString();
 
                 // active parkings
@@ -59,7 +59,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadAllRecords(txtSearchAdmin.Text.Trim());
+            LoadAllRecords(txtSearchAdmin.Text.Trim()); // live search records
         }
 
         private void LoadAllRecords(string searchTerm = "")

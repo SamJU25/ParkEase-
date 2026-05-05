@@ -26,15 +26,17 @@ namespace ParkEase
 
         private void frmSignIn_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.Exit();
+            Application.Exit(); // kills entire app
         }
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
+            // gets user input
             string username = txtSignInUsername.Text.Trim();
             string password = txtSignInPassword.Text.Trim();
             string role = cmbSignInUserAdmin.Text.Trim();
 
+            // validation: prevents empty input
             if (username == "")
             {
                 MessageBox.Show("Please enter your username.");
@@ -53,12 +55,13 @@ namespace ParkEase
 
             try
             {
+                // checks database for match
                 string sql = "SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "' AND role='" + role + "'";
-                DataTable dt = da.ExecuteQueryTable(sql);
+                DataTable dt = da.ExecuteQueryTable(sql); // run query
 
-                if (dt.Rows.Count > 0)
+                if (dt.Rows.Count > 0) // if match found
                 {
-                    // store login info
+                    // store login info in session
                     Session.UserId = Convert.ToInt32(dt.Rows[0]["user_id"]);
                     Session.Username = username;
                     Session.Role = role;
@@ -67,15 +70,17 @@ namespace ParkEase
 
                     if (role == "Admin")
                     {
+                        // opens admin dashboard
                         frmAdminDashboard adminForm = new frmAdminDashboard();
                         adminForm.Show();
-                        this.Hide();
+                        this.Hide(); // hides sign in form
                     }
                     else if (role == "User")
                     {
+                        // opens user dashboard
                         frmUserDashboard userForm = new frmUserDashboard();
                         userForm.Show();
-                        this.Hide();
+                        this.Hide(); // hides sign in form
                     }
                 }
                 else
@@ -98,7 +103,7 @@ namespace ParkEase
             if (answer == DialogResult.Yes)
             {
                 this.Hide();
-                frmSignUp registerForm = new frmSignUp();
+                frmSignUp registerForm = new frmSignUp(); // opens sign up form
                 registerForm.Show();
             }
         }

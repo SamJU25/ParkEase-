@@ -38,7 +38,7 @@ namespace ParkEase
 
         private void txtSearchAdmin_TextChanged(object sender, EventArgs e)
         {
-            LoadHistoryTable(txtSearchAdmin.Text.Trim());
+            LoadHistoryTable(txtSearchAdmin.Text.Trim()); // live search history
         }
 
         private void LoadHistoryTable(string searchTerm = "")
