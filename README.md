@@ -84,27 +84,32 @@ ParkEase/
 
 ### Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/SamJU25/ParkEase.git
-   ```
+**1. Clone the repository**
 
-2. **Restore the database**
-   - Open SSMS
-   - Run the included SQL script to create the database and tables
-   - (Optional) Insert a default admin account
+```bash
+git clone https://github.com/SamJU25/ParkEase-.git
+```
 
-3. **Update the connection string**
-   Open `DataAccess.cs` and edit this line to match your SQL Server instance:
-   ```csharp
-   this.Sqlcon = new SqlConnection(
-       @"Data Source=YOUR-SERVER-NAME;Initial Catalog=DSummerDB;Integrated Security=True"
-   );
-   ```
+**2. Restore the database**
 
-4. **Build and run**
-   - Open `ParkEase.sln` in Visual Studio
-   - Press **F5** to build and run
+- Open SSMS
+- Run the included SQL script (in the `Database` folder) to create the database and tables
+- (Optional) Insert a default admin account
+
+**3. Update the connection string**
+
+Open `DataAccess.cs` and edit this line to match your SQL Server instance:
+
+```csharp
+this.Sqlcon = new SqlConnection(
+    @"Data Source=YOUR-SERVER-NAME;Initial Catalog=DSummerDB;Integrated Security=True"
+);
+```
+
+**4. Build and run**
+
+- Open `ParkEase.slnx` in Visual Studio
+- Press **F5** to build and run
 
 ---
 
