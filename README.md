@@ -93,7 +93,7 @@ git clone https://github.com/SamJU25/ParkEase-.git
 **2. Restore the database**
 
 - Open SSMS
-- Run the included SQL script (in the `Database` folder) to create the database and tables
+- Run the SQL script located in the `Database` folder to create the database and tables
 - (Optional) Insert a default admin account
 
 **3. Update the connection string**
@@ -118,6 +118,7 @@ this.Sqlcon = new SqlConnection(
 | Role  | Username | Password   |
 |-------|----------|------------|
 | Admin | `admin`  | `admin123` |
+| User  | `john`   | `12345`    |
 
 > Update these credentials in the `users` table after first login.
 
@@ -125,11 +126,11 @@ this.Sqlcon = new SqlConnection(
 
 ## 🧱 Design Notes
 
-- **OOP-based design** with separate concerns (UI, data access, session).
-- **Single `DataAccess` class** handles all database connections and queries.
-- **Try-catch blocks** wrap all DB operations and login checks.
-- **Form validation** prevents empty fields and invalid input.
-- **Clean UI** — white background, light purple buttons, rectangular controls, no animations.
+- **OOP-based design** with separate concerns (UI, data access, session)
+- **Single `DataAccess` class** handles all database connections and queries
+- **Try-catch blocks** wrap all DB operations and login checks
+- **Form validation** prevents empty fields and invalid input
+- **Clean UI** — white background, light purple buttons, rectangular controls, no animations
 
 ---
 
@@ -141,4 +142,4 @@ This project is created for academic purposes.
 
 ## 👤 Author
 
-Built as part of a coursework submission.
+**SamJU25** — Built as part of a coursework submission.
