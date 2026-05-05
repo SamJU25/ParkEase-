@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7FDFF2E5-FCCC-4691-B9AC-8BD1D6846E4B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Login</RootNamespace>
+    <AssemblyName>Login</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Guna.UI2, Version=2.0.4.7, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
+      <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.7\lib\net48\Guna.UI2.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataAccess.cs" />
+    <Compile Include="frmAdminDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAdminDashboard.Designer.cs">
+      <DependentUpon>frmAdminDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmAdminManageSlots.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAdminManageSlots.Designer.cs">
+      <DependentUpon>frmAdminManageSlots.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmAdminParkingRecords.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAdminParkingRecords.Designer.cs">
+      <DependentUpon>frmAdminParkingRecords.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmAdminSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAdminSettings.Designer.cs">
+      <DependentUpon>frmAdminSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmAdminUsers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAdminUsers.Designer.cs">
+      <DependentUpon>frmAdminUsers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmAdminVehicles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAdminVehicles.Designer.cs">
+      <DependentUpon>frmAdminVehicles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSignIn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSignIn.Designer.cs">
+      <DependentUpon>frmSignIn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSignUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSignUp.Designer.cs">
+      <DependentUpon>frmSignUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmUserAvailableSlots.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmUserAvailableSlots.Designer.cs">
+      <DependentUpon>frmUserAvailableSlots.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmUserDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmUserDashboard.Designer.cs">
+      <DependentUpon>frmUserDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmUserParkingHistory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmUserParkingHistory.Designer.cs">
+      <DependentUpon>frmUserParkingHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmUserPayment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmUserPayment.Designer.cs">
+      <DependentUpon>frmUserPayment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmUserSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmUserSettings.Designer.cs">
+      <DependentUpon>frmUserSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmUserVehicles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmUserVehicles.Designer.cs">
+      <DependentUpon>frmUserVehicles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmAdminDashboard.resx">
+      <DependentUpon>frmAdminDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAdminManageSlots.resx">
+      <DependentUpon>frmAdminManageSlots.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAdminParkingRecords.resx">
+      <DependentUpon>frmAdminParkingRecords.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAdminSettings.resx">
+      <DependentUpon>frmAdminSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAdminUsers.resx">
+      <DependentUpon>frmAdminUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmAdminVehicles.resx">
+      <DependentUpon>frmAdminVehicles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSignIn.resx">
+      <DependentUpon>frmSignIn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSignUp.resx">
+      <DependentUpon>frmSignUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmUserAvailableSlots.resx">
+      <DependentUpon>frmUserAvailableSlots.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmUserDashboard.resx">
+      <DependentUpon>frmUserDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmUserParkingHistory.resx">
+      <DependentUpon>frmUserParkingHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmUserPayment.resx">
+      <DependentUpon>frmUserPayment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmUserSettings.resx">
+      <DependentUpon>frmUserSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmUserVehicles.resx">
+      <DependentUpon>frmUserVehicles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_available.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_cancel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_dashboard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_exit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_history.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_login.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_logout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_park.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_pay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_payment.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_records.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_slots.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_user.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_users.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_vehicle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Image_Login_White.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo_square.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
