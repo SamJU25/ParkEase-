@@ -85,7 +85,7 @@ namespace ParkEase
         private bool IsValidPhone(string phone)
         {
             if (string.IsNullOrEmpty(phone)) return true;
-            string pattern = @"^[\d\s\-\+\(\)]{10,15}$";
+            string pattern = @"^01\d{9}$";
             return Regex.IsMatch(phone, pattern);
         }
 
@@ -126,7 +126,7 @@ namespace ParkEase
 
             if (!IsValidPhone(newPhone))
             {
-                MessageBox.Show("Please enter a valid phone number (10-15 digits).", "Invalid Phone");
+                MessageBox.Show("Please enter a valid phone number (Must start with '01' and be exactly 11 digits).", "Invalid Phone");
                 return;
             }
 
@@ -158,15 +158,15 @@ namespace ParkEase
                         return;
                     }
 
-                    if (newPassword.Length > 5)
+                    if (newPassword.Length < 3 || newPassword.Length > 5)
                     {
-                        MessageBox.Show("New password cannot exceed 5 characters.");
+                        MessageBox.Show("New password must be between 3 and 5 characters.");
                         return;
                     }
 
                     if (newPassword == currentPassword)
                     {
-                        MessageBox.Show("New password must be different from current password.");
+                        MessageBox.Show("New password can't be same with current password.");
                         return;
                     }
 

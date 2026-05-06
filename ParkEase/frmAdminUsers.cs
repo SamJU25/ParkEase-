@@ -152,24 +152,15 @@ namespace ParkEase
                 {
                     // edit existing user
 
-                    // cant demote last admin
-                    if (role == "User")
-                    {
-                        string currentRoleSql = "SELECT role FROM users WHERE user_id=" + selectedUserId;
-                        DataTable dtCurrent = da.ExecuteQueryTable(currentRoleSql);
-                        string currentRole = dtCurrent.Rows[0]["role"].ToString();
+                    // cant change an admin's role
+                    string currentRoleSql = "SELECT role FROM users WHERE user_id=" + selectedUserId;
+                    DataTable dtCurrent = da.ExecuteQueryTable(currentRoleSql);
+                    string currentRole = dtCurrent.Rows[0]["role"].ToString();
 
-                        if (currentRole == "Admin")
-                        {
-                            string adminCountSql = "SELECT COUNT(*) FROM users WHERE role='Admin'";
-                            DataTable dtCount = da.ExecuteQueryTable(adminCountSql);
-                            int adminCount = Convert.ToInt32(dtCount.Rows[0][0]);
-                            if (adminCount <= 1)
-                            {
-                                MessageBox.Show("Cannot demote the last admin! System needs at least one admin.", "Action Denied");
-                                return;
-                            }
-                        }
+                    if (currentRole == "Admin" && role != "Admin")
+                    {
+                        MessageBox.Show("Cannot change the role of an Admin account.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
 
                     // check duplicate username (excluding self)
@@ -230,21 +221,15 @@ namespace ParkEase
 
             try
             {
-                // cant delete last admin
+                // cant delete an admin
                 string roleCheckSql = "SELECT role FROM users WHERE user_id=" + selectedUserId;
                 DataTable dtRole = da.ExecuteQueryTable(roleCheckSql);
                 string userRole = dtRole.Rows[0]["role"].ToString();
 
                 if (userRole == "Admin")
                 {
-                    string adminCountSql = "SELECT COUNT(*) FROM users WHERE role='Admin'";
-                    DataTable dtCount = da.ExecuteQueryTable(adminCountSql);
-                    int adminCount = Convert.ToInt32(dtCount.Rows[0][0]);
-                    if (adminCount <= 1)
-                    {
-                        MessageBox.Show("Cannot delete the last admin! System needs at least one admin.", "Action Denied");
-                        return;
-                    }
+                    MessageBox.Show("Admin accounts cannot be deleted.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
 
                 // cant delete if they have active parking

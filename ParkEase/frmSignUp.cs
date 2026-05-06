@@ -53,9 +53,9 @@ namespace ParkEase
                 MessageBox.Show("Username cannot be more than 30 characters.");
                 return;
             }
-            if (password.Length > 5)
+            if (password.Length < 3 || password.Length > 5)
             {
-                MessageBox.Show("Password cannot be more than 5 characters.");
+                MessageBox.Show("Password must be between 3 and 5 characters.");
                 return;
             }
 

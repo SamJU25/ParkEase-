@@ -92,13 +92,40 @@ namespace ParkEase
                 return;
             }
 
+            if (!string.IsNullOrEmpty(newPhone))
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(newPhone, @"^01\d{9}$"))
+                {
+                    MessageBox.Show("Please enter a valid phone number (Must start with '01' and be exactly 11 digits).", "Invalid Phone", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             try
             {
                 if (!string.IsNullOrEmpty(newPassword)) // if changing password
                 {
+                    if (string.IsNullOrEmpty(currentPassword))
+                    {
+                        MessageBox.Show("Please enter your Current Password to change it.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     if (actualCurrentPassword != currentPassword) // verify password
                     {
                         MessageBox.Show("Incorrect Current Password.", "Security Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (newPassword.Length < 3 || newPassword.Length > 5)
+                    {
+                        MessageBox.Show("New password must be between 3 and 5 characters.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (newPassword == currentPassword)
+                    {
+                        MessageBox.Show("New password can't be same with current password.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                 }
